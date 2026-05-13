@@ -6,7 +6,8 @@ namespace Mtd.GtfsRealTime.Proto.Helpers.Helpers;
 
 public static class RerouteHelpers
 {
-	private static readonly string[] _blockElements = [
+	private static readonly HashSet<string> _blockElements = new(StringComparer.OrdinalIgnoreCase)
+	{
 		"address",
 		"article",
 		"aside",
@@ -40,7 +41,7 @@ public static class RerouteHelpers
 		"section",
 		"table",
 		"ul",
-	];
+	};
 
 	public static string StripHtml(this string input)
 	{

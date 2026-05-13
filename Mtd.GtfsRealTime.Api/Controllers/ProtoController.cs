@@ -40,7 +40,7 @@ public abstract class ProtoController<TMessage> : ControllerBase
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Failed to fetch from downstream server: {uri}.", downstreamServer);
-			throw;
+			return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Downstream Fetch Error", detail: "Failed to connect to the downstream server.");
 		}
 
 		// ensure fetch was successful

@@ -28,11 +28,6 @@ public sealed class DownstreamHeadHealthCheck : IHealthCheck
 		HealthCheckContext context,
 		CancellationToken cancellationToken = default)
 	{
-		if (_healthOptions?.CurrentValue == null)
-		{
-			throw new ArgumentNullException(nameof(context));
-		}
-
 		var url = GetUrlForRegistrationName(context.Registration.Name, _healthOptions.CurrentValue);
 
 		if (string.IsNullOrWhiteSpace(url))
@@ -72,6 +67,6 @@ public sealed class DownstreamHeadHealthCheck : IHealthCheck
 		{
 			TRIP_UPDATES_NAME => options.TripUpdatesCheckUrl,
 			VEHICLE_POSITIONS_NAME => options.VehiclePositionsCheckUrl,
-			_ => throw new Exception("Unknown health check registration name: " + registrationName)
+			_ => throw new InvalidOperationException("Unknown health check registration name: " + registrationName)
 		};
 }

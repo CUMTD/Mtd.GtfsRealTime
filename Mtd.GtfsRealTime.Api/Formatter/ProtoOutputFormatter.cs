@@ -14,6 +14,11 @@ public class ProtoOutputFormatter : OutputFormatter
 	}
 	public override bool CanWriteResult(OutputFormatterCanWriteContext context)
 	{
+		if (context.ObjectType is null)
+		{
+			return false;
+		}
+
 		// Accept any protobuf IMessage (covers FeedMessage and any future message types)
 		// as well as raw byte[] pass-throughs.
 		if (typeof(IMessage).IsAssignableFrom(context.ObjectType) || typeof(byte[]).IsAssignableFrom(context.ObjectType))

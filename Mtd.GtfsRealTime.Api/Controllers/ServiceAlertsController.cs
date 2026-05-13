@@ -11,14 +11,18 @@ namespace Mtd.GtfsRealTime.Api.Controllers;
 
 [Route("service-alerts")]
 [OutputCache(PolicyName = StaticDataCacheProfile.NAME)]
-public class ServiceAlertsController : ProtoController<FeedMessage>
+public class ServiceAlertsController : ControllerBase
 {
 	private readonly IRerouteRepository<IReadOnlyCollection<Reroute>> _rerouteRepository;
+	private readonly ILogger<ServiceAlertsController> _logger;
 
-	public ServiceAlertsController(IRerouteRepository<IReadOnlyCollection<Reroute>> rerouteRepository, HttpClient httpClient, ILogger<ServiceAlertsController> logger) : base(FeedMessage.Parser, httpClient, logger)
+	public ServiceAlertsController(IRerouteRepository<IReadOnlyCollection<Reroute>> rerouteRepository, ILogger<ServiceAlertsController> logger)
 	{
 		ArgumentNullException.ThrowIfNull(rerouteRepository, nameof(rerouteRepository));
+		ArgumentNullException.ThrowIfNull(logger, nameof(logger));
+
 		_rerouteRepository = rerouteRepository;
+		_logger = logger;
 	}
 
 	[HttpGet, HttpHead, HttpOptions]
@@ -38,7 +42,7 @@ public class ServiceAlertsController : ProtoController<FeedMessage>
 			return Problem(title: "Error", statusCode: StatusCodes.Status500InternalServerError, detail: "Failed to fetch reroutes.");
 		}
 
-		var converted = RerouteConverter.ConvertToFeedMessage(reroutes);
+		var converted = reroutes.ConvertToFeedMessage();
 
 		return Ok(converted);
 	}

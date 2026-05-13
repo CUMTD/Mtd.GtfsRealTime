@@ -15,7 +15,7 @@ public class Health
 	[Required]
 	[Url]
 	[System.ComponentModel.Description("Downstream URL to point Trip Update health check head request to.")]
-	public required string TripUpdatesCheckUrl { get; set; }
+	public required string TripUpdatesCheckUrl { get; init; }
 
 	/// <summary>
 	/// Downstream URL to check vehicle positions.
@@ -23,6 +23,6 @@ public class Health
 	[Required]
 	[Url]
 	[System.ComponentModel.Description("Downstream URL to check vehicle positions.")]
-	public required string VehiclePositionsCheckUrl { get; set; }
+	public required string VehiclePositionsCheckUrl { get; init; }
 
 }

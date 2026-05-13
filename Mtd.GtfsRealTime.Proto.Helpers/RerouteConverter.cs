@@ -60,7 +60,8 @@ public static class RerouteConverter
 		{
 			Header = new FeedHeader
 			{
-				GtfsRealtimeVersion = GtfsRealtimeVersion
+				GtfsRealtimeVersion = GtfsRealtimeVersion,
+				Timestamp = DateTime.UtcNow.ToPosixTime()
 			}
 		};
 
