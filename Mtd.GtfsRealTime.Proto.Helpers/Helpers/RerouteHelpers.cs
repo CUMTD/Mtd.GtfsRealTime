@@ -4,6 +4,9 @@ using HtmlAgilityPack;
 
 namespace Mtd.GtfsRealTime.Proto.Helpers.Helpers;
 
+/// <summary>
+/// Extension methods for stripping HTML markup from reroute description fields.
+/// </summary>
 public static class RerouteHelpers
 {
 	private static readonly HashSet<string> _blockElements = new(StringComparer.OrdinalIgnoreCase)
@@ -43,6 +46,12 @@ public static class RerouteHelpers
 		"ul",
 	};
 
+	/// <summary>
+	/// Strips HTML tags from <paramref name="input"/> and returns plain text with block-level
+	/// elements separated by newlines. List items are prefixed with <c>* </c>.
+	/// </summary>
+	/// <param name="input">An HTML string, e.g. from a rich-text reroute description field.</param>
+	/// <returns>Plain text suitable for use in a GTFS-RT <c>TranslatedString</c>.</returns>
 	public static string StripHtml(this string input)
 	{
 		var htmlDocument = new HtmlDocument();

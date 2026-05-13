@@ -5,6 +5,20 @@ using Microsoft.Net.Http.Headers;
 
 namespace Mtd.GtfsRealTime.Api.Controllers;
 
+/// <summary>
+/// Abstract base controller for endpoints that return GTFS-Realtime
+/// <see cref="IMessage{T}"/> data, either passed through from a downstream feed server or
+/// built locally.
+/// </summary>
+/// <typeparam name="TMessage">
+/// The concrete proto message type (e.g. <c>FeedMessage</c>).
+/// </typeparam>
+/// <remarks>
+/// Subclasses that proxy a downstream feed should call
+/// <see cref="GetProtoResponseFromDownstreamServer"/>.
+/// Subclasses that build their own feed (e.g. <c>ServiceAlertsController</c>) should
+/// inherit <see cref="ControllerBase"/> directly instead.
+/// </remarks>
 [ApiController]
 public abstract class ProtoController<TMessage> : ControllerBase
 	where TMessage : IMessage<TMessage>
@@ -30,6 +44,23 @@ public abstract class ProtoController<TMessage> : ControllerBase
 		_logger = logger;
 	}
 
+	/// <summary>
+	/// Fetches the GTFS-RT feed from <paramref name="downstreamServer"/>, then returns it as
+	/// either a protobuf binary response or canonical proto3 JSON, depending on the client's
+	/// <c>Accept</c> header.
+	/// </summary>
+	/// <param name="downstreamServer">Absolute URI of the upstream GTFS-RT feed endpoint.</param>
+	/// <param name="cancellationToken">Propagates notification that the request has been cancelled.</param>
+	/// <returns>
+	/// <list type="bullet">
+	///   <item>
+	///     <description>
+	///       <c>200 OK</c> with a protobuf binary body (or proto3 JSON when <c>Accept: application/json</c>).
+	///     </description>
+	///   </item>
+	///   <item><description><c>500 Internal Server Error</c> if the downstream request fails or the response cannot be decoded/parsed.</description></item>
+	/// </list>
+	/// </returns>
 	protected async Task<IActionResult> GetProtoResponseFromDownstreamServer(Uri downstreamServer, CancellationToken cancellationToken)
 	{
 		HttpResponseMessage httpResponseMessage;

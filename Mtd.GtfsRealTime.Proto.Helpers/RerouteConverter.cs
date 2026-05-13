@@ -5,6 +5,11 @@ using TransitRealtime;
 
 namespace Mtd.GtfsRealTime.Proto.Helpers;
 
+/// <summary>
+/// Converts <see cref="Reroute"/> entities retrieved from the Stopwatch database into a
+/// GTFS-Realtime <see cref="FeedMessage"/> containing <see cref="Alert"/> service-alert
+/// entities.
+/// </summary>
 public static class RerouteConverter
 {
 	private const string GtfsRealtimeVersion = "2.0";
@@ -54,6 +59,15 @@ public static class RerouteConverter
 		return entity;
 	}
 
+	/// <summary>
+	/// Converts a collection of <see cref="Reroute"/> entities to a GTFS-RT
+	/// <see cref="FeedMessage"/> containing one <see cref="FeedEntity"/> per reroute.
+	/// </summary>
+	/// <param name="reroutes">The active reroutes to include in the feed.</param>
+	/// <returns>
+	/// A <see cref="FeedMessage"/> with <c>gtfsRealtimeVersion</c> set to <c>"2.0"</c>,
+	/// a current <c>timestamp</c>, and one service-alert entity per reroute.
+	/// </returns>
 	public static FeedMessage ConvertToFeedMessage(this IEnumerable<Reroute> reroutes)
 	{
 		var feedMessage = new FeedMessage

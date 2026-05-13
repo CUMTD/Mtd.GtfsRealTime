@@ -9,6 +9,11 @@ using TransitRealtime;
 
 namespace Mtd.GtfsRealTime.Api.Controllers;
 
+/// <summary>
+/// Provides the GTFS-Realtime <em>Service Alerts</em> feed, built from active reroutes stored
+/// in the Stopwatch database. Responses are cached for
+/// <see cref="StaticDataCacheProfile.DURATION_IN_SECONDS"/> seconds.
+/// </summary>
 [Route("service-alerts")]
 [OutputCache(PolicyName = StaticDataCacheProfile.NAME)]
 public class ServiceAlertsController : ControllerBase
@@ -25,6 +30,10 @@ public class ServiceAlertsController : ControllerBase
 		_logger = logger;
 	}
 
+	/// <summary>
+	/// Returns a GTFS-RT Service Alerts feed constructed from all currently active reroutes.
+	/// </summary>
+	/// <param name="cancellationToken">Propagates notification that the request has been cancelled.</param>
 	[HttpGet, HttpHead, HttpOptions]
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMessage))]

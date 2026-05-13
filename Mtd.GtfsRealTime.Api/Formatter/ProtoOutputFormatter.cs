@@ -5,6 +5,17 @@ using Microsoft.Net.Http.Headers;
 
 namespace Mtd.GtfsRealTime.Api.Formatter;
 
+/// <summary>
+/// An ASP.NET Core output formatter that serializes <see cref="IMessage"/> proto messages
+/// and raw <see cref="byte"/> arrays as <c>application/protobuf</c> or
+/// <c>application/x-protobuf</c> binary responses.
+/// </summary>
+/// <remarks>
+/// This formatter is registered before the built-in JSON formatter so that it is selected
+/// when the client sends no <c>Accept</c> header (or a wildcard). It also sets
+/// <c>Content-Disposition: attachment</c> and <c>Content-Description: File Transfer</c> so
+/// that Swagger UI renders a download link rather than "Unrecognized response type".
+/// </remarks>
 public class ProtoOutputFormatter : OutputFormatter
 {
 	public ProtoOutputFormatter()
@@ -12,6 +23,12 @@ public class ProtoOutputFormatter : OutputFormatter
 		SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/x-protobuf"));
 		SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/protobuf"));
 	}
+	/// <inheritdoc/>
+	/// <remarks>
+	/// Returns <see langword="true"/> for any <see cref="IMessage"/> subclass (generated proto
+	/// message) or <see cref="byte"/> array when the negotiated content type is a protobuf
+	/// media type.
+	/// </remarks>
 	public override bool CanWriteResult(OutputFormatterCanWriteContext context)
 	{
 		if (context.ObjectType is null)
@@ -27,6 +44,12 @@ public class ProtoOutputFormatter : OutputFormatter
 		}
 		return false;
 	}
+	/// <inheritdoc/>
+	/// <remarks>
+	/// Writes the object as binary protobuf bytes. Also sets <c>Content-Disposition: attachment</c>
+	/// and <c>Content-Description: File Transfer</c> response headers so that Swagger UI displays a
+	/// download link instead of "Unrecognized response type".
+	/// </remarks>
 	public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
 	{
 		var httpContext = context.HttpContext;
