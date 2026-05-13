@@ -1,5 +1,7 @@
 # MTD GTFS-Realtime API
 
+[![.NET Build](https://github.com/CUMTD/Mtd.GtfsRealTime/actions/workflows/build.yml/badge.svg)](https://github.com/CUMTD/Mtd.GtfsRealTime/actions/workflows/build.yml)
+
 A lightweight ASP.NET Core 10 API that exposes [GTFS-Realtime](https://gtfs.org/realtime/) feed endpoints for the **Champaign-Urbana Mass Transit District (MTD)**:
 
 | Endpoint | Source |
