@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MTD Developer API</title>
+    <link rel="stylesheet" href="/swagger/lib/swagger-ui.css">
+    <link rel="stylesheet" href="/swagger/swagger-custom.css">
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="/swagger/lib/swagger-ui-bundle.js"></script>
+    <script src="/swagger/lib/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = () => {
+            const ui = SwaggerUIBundle({
+				url: "/openapi/v1.yaml",
+                dom_id: "#swagger-ui",
+                layout: "StandaloneLayout",
+                requestSnippetsEnabled: true,
+                displayRequestDuration: true,
+                deepLinking: true,
+                persistAuthorization: true,
+                docExpansion: "list",
+				showExtensions: false,
+                filter: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+					SwaggerUIBundle.plugins.DownloadUrl,
+					SwaggerUIBundle.plugins.RequestDuration
+                ]
+            });
+        };
+    </script>
+</body>
+</html>

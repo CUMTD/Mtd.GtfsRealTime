@@ -1,0 +1,34 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.5.1" />
+    <PackageVersion Include="Azure.Identity" Version="1.21.0" />
+    <PackageVersion Include="Google.Api.CommonProtos" Version="2.17.0" />
+    <PackageVersion Include="Google.Protobuf" Version="3.34.1" />
+    <PackageVersion Include="Google.Protobuf.Tools" Version="3.34.1" />
+    <PackageVersion Include="Grpc.Net.Client" Version="2.80.0" />
+    <PackageVersion Include="Grpc.Tools" Version="2.80.0" />
+    <PackageVersion Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Build.Utilities.Core" Version="18.6.3" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.8" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.300" />
+    <PackageVersion Include="Mtd.Stopwatch.Core" Version="10.6.6" />
+    <PackageVersion Include="Mtd.Stopwatch.Infrastructure.EFCore" Version="10.6.6" />
+    <PackageVersion Include="Serilog" Version="4.3.1" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="10.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.AssemblyName" Version="2.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.ClientInfo" Version="2.9.0" />
+    <PackageVersion Include="Serilog.Enrichers.Context" Version="4.6.5" />
+    <PackageVersion Include="Serilog.Enrichers.Environment" Version="3.0.1" />
+    <PackageVersion Include="Serilog.Enrichers.Process" Version="3.0.0" />
+    <PackageVersion Include="Serilog.Enrichers.Thread" Version="4.0.0" />
+    <PackageVersion Include="Serilog.Exceptions" Version="8.4.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="9.0.0" />
+  </ItemGroup>
+</Project>

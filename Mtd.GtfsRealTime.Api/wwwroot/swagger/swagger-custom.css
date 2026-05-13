@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --white: #fff;
+    --lightest-grey: #f8f8f7;
+    --light-grey: #d9d9d6;
+    --dark-grey: #75787b;
+    --darkest-grey: #53565a;
+    --light-blue: #0071ce;
+    --light-blue-transparent: #edf5fc;
+    --dark-blue: #002f87;
+    --dark-red: #e10027;
+    --black: #000;
+    --light-teal: #30beaa;
+    --dark-teal: #008891;
+    --light-green: #63be45;
+    --dark-green: #318d3a;
+    --text: var(--black);
+    --primary-bg: var(--lightest-grey);
+    --secondary-bg: var(--white);
+    --link: var(--dark-blue);
+    --auth-button: var(--dark-teal);
+    --border-color: var(--darkest-grey);
+}
+
+body {
+    background: var(--primary-bg) !important;
+	margin: 0;
+    font-family: 'Overpass', sans-serif !important;
+}
+
+.swagger-ui .download-url-wrapper {
+    display:none!important;
+}
+
+.swagger-ui {
+    font-family: 'Overpass', sans-serif !important;
+    color: var(--black);
+}
+
+    .swagger-ui .scheme-container {
+        background: var(--secondary-bg);
+    }
+
+    .swagger-ui .topbar a svg {
+        margin-left: 6rem;
+    }
+
+    .swagger-ui .info li, .swagger-ui .info p,
+    .swagger-ui .info table,
+    .swagger-ui .info .title,
+    .swagger-ui .opblock-tag,
+    .swagger-ui section.models h4 {
+        color: var(--text);
+        font-family: 'Overpass', sans-serif !important;
+    }
+
+    .swagger-ui .topbar {
+        background: var(--dark-blue);
+    }
+
+    .swagger-ui .opblock-tag {
+        border-bottom-color: var(--border-color);
+    }
+
+    .swagger-ui section.models {
+        border-color: var(--border-color);
+    }
+
+/* Apply Overpass font to UI elements only - exclude code elements */
+.swagger-ui h1, .swagger-ui h2, .swagger-ui h3, .swagger-ui h4, .swagger-ui h5, .swagger-ui h6,
+.swagger-ui .info, .swagger-ui .opblock-tag, .swagger-ui .opblock-summary-description,
+.swagger-ui .opblock-summary-path, .swagger-ui .tab-header,
+.swagger-ui .btn, .swagger-ui label, .swagger-ui .parameter__name,
+.swagger-ui .parameter__in, .swagger-ui .parameter__required,
+.swagger-ui .response-col_status, .swagger-ui .response-col_links,
+.swagger-ui .model-title, .swagger-ui .property-row dt {
+    font-family: 'Overpass', sans-serif !important;
+}
+
+/* Preserve monospace fonts for code elements - more specific selectors */
+.swagger-ui code,
+.swagger-ui pre,
+.swagger-ui .microlight,
+.swagger-ui .highlight-code,
+.swagger-ui .renderedMarkdown code,
+.swagger-ui .model-box,
+.swagger-ui .prop-type,
+.swagger-ui .parameter__type,
+.swagger-ui .response-content-type,
+.swagger-ui .opblock-section-header code,
+.swagger-ui .opblock-description-wrapper code,
+.swagger-ui .tab-header .tab-item code,
+.swagger-ui .model .property-type,
+.swagger-ui .property-row .property-type,
+.swagger-ui textarea.curl,
+.swagger-ui .copy-to-clipboard,
+.swagger-ui .request-url,
+.swagger-ui .opblock-body pre,
+.swagger-ui .example-select,
+.swagger-ui .model-title code,
+.swagger-ui .model code,
+.swagger-ui pre.microlight,
+.swagger-ui .response-col_description .markdown,
+.swagger-ui .response-col_description .renderedMarkdown,
+.swagger-ui .model-example,
+.swagger-ui .model-example .microlight,
+.swagger-ui .parameter__value,
+.swagger-ui .parameter__value textarea,
+.swagger-ui .execute-wrapper .btn.execute + div,
+.swagger-ui .responses-wrapper .response .response-col_description .microlight {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+}
+
+.topbar-wrapper img[alt="Swagger UI"], .topbar-wrapper span {
+    visibility: hidden;
+}
+
+.topbar-wrapper .link:after {
+    height: 60px;
+    content: ' ';
+    /*content: 'mtd.dev';*/
+    color: #fff;
+    visibility: visible;
+    display: block;
+    position: absolute;
+    padding: 14px 15px 15px 100px;
+    background-image: url('/image/mtd-logo.svg');
+    background-repeat: no-repeat;
+    background-size: 80px;
+    background-position-y: center;
+    font-family: 'Overpass', sans-serif !important;
+}
+
+.topbar-wrapper > a:nth-child(1) {
+	height: 40px !important
+}
+
+.topbar-wrapper > a:nth-child(1) > svg:nth-child(1) {
+	display: none !important;
+}
+
+
+
+.swagger-ui .topbar .download-url-wrapper .select-label select {
+	border-color: var(--light-blue);
+}
+
+.swagger-ui .info .title small:last-child {
+    background-color: var(--light-blue) !important;
+}
+
+
+.swagger-ui .btn.authorize {
+    color: var(--auth-button);
+    border-color: var(--auth-button);
+}
+
+.swagger-ui .info a {
+    color: var(--link);
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary-method {
+    background: var(--light-blue);
+}
+
+.swagger-ui .opblock.opblock-get .opblock-summary {
+    border-color: var(--light-blue);
+}
+
+.swagger-ui .opblock.opblock-get .tab-header .tab-item.active h4 span:after {
+    background: var(--light-blue);
+}
+
+.swagger-ui .opblock.opblock-get {
+    background: var(--light-blue-transparent);
+}
+
+.swagger-ui .btn {
+    border-color: var(--darkest-grey);
+    color: var(--darkest-grey);
+}
+
+    .swagger-ui .btn.cancel {
+        border-color: var(--dark-red);
+        color: var(--dark-red)
+    }
+
+
+.swagger-ui .auth-btn-wrapper {
+    text-align: left;
+    justify-content: flex-end;
+    flex-flow: row-reverse nowrap;
+}
+
+    .swagger-ui .auth-btn-wrapper .btn:first-of-type {
+        margin-right: 10px;
+    }
+
+.swagger-ui .response-control-media-type__accept-message, .swagger-ui .response-control-media-type--accept-controller select {
+    color: var(--dark-green);
+    border-color: var(--dark-green);
+}
+
+.swagger-ui .parameters-col_description input[type=text] {
+    max-width: 580px;
+}

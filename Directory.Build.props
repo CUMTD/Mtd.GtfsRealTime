@@ -1,0 +1,21 @@
+<Project>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- SourceLink -->
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All" />
+	</ItemGroup>
+</Project>

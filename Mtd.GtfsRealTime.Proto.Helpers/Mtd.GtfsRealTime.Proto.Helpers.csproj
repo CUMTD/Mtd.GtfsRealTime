@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Mtd.Stopwatch.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mtd.GtfsRealTime.Codegen\Mtd.GtfsRealTime.Codegen.csproj" />
+    <ProjectReference Include="..\Mtd.GtfsRealTime.Protos\Mtd.GtfsRealTime.Protos.csproj" />
+  </ItemGroup>
+</Project>

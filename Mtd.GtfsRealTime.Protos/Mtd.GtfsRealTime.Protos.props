@@ -1,0 +1,22 @@
+<Project>
+	<PropertyGroup>
+		<!-- Allow consumers to choose Client/Server/Both; default Both -->
+		<MtdGtfsRt Condition="'$(MtdGtfsRt)' == ''">Both</MtdGtfsRt>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Auto-inject the Protobuf includes from packaged content -->
+		<Protobuf Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\Protos\gtfsrt.proto"
+				  GrpcServices="$(MtdSiriGrpcServices)"
+				  ProtoRoot="$(MSBuildThisFileDirectory)..\contentFiles\any\any\Protos" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<!-- Add Google.Api.CommonProtos include path for protoc -->
+		<Protobuf_AdditionalImportDirs>
+			$(Protobuf_AdditionalImportDirs);
+			$(PkgGoogle_Api_CommonProtos)\build\native\include
+		</Protobuf_AdditionalImportDirs>
+	</PropertyGroup>
+
+</Project>

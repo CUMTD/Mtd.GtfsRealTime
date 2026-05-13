@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="NuGet.config" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="Mtd.GtfsRealTime.Api/Mtd.GtfsRealTime.Api.csproj" Id="055e8d2f-7dc7-4747-a882-1d0b4fafb134" />
+  <Project Path="Mtd.GtfsRealTime.Codegen/Mtd.GtfsRealTime.Codegen.csproj" Id="472c4ba1-affe-4dca-9422-ea600cd9b959" />
+  <Project Path="Mtd.GtfsRealTime.Proto.Helpers/Mtd.GtfsRealTime.Proto.Helpers.csproj" />
+  <Project Path="Mtd.GtfsRealTime.Protos/Mtd.GtfsRealTime.Protos.csproj" />
+</Solution>

@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Mtd.GtfsRealTime.Protos -->
+
+	<PropertyGroup>
+		<PackageId>Mtd.GtfsRealTime.Protos</PackageId>
+		<Description>Shared GTFS-RT .proto files</Description>
+		<PackageTags>proto;gtfs-rt</PackageTags>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<Deterministic>true</Deterministic>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Google.Api.CommonProtos" />
+	</ItemGroup>
+
+	<!-- Pack all protos so consumers receive them -->
+	<ItemGroup>
+		<None Include="Protos\*.proto" Pack="true" PackagePath="contentFiles/any/any/Protos/" />
+	</ItemGroup>
+
+	<!-- Ship the .props so consumers auto-include and add AdditionalImportDirs -->
+	<ItemGroup>
+		<None Include="Mtd.GtfsRealTime.Protos.props" Pack="true" PackagePath="buildTransitive/Mtd.GtfsRealTime.Protos.props" />
+	</ItemGroup>
+
+</Project>

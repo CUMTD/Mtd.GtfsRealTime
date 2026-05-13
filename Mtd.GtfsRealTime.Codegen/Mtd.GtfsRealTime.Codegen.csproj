@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Mtd.GtfsRealTime.Codegen -->
+
+	<ItemGroup>
+		<PackageReference Include="Google.Api.CommonProtos" GeneratePathProperty="true" />
+		<PackageReference Include="Google.Protobuf" />
+		<PackageReference Include="Grpc.Tools">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+			GrpcServices="None"        → Only generates message classes, no gRPC stubs
+			GrpcServices="Client"      → Generates client stubs
+			GrpcServices="Server"      → Generates server stubs
+			GrpcServices="Both"        → Generates both
+			OutputDir                  → Where generated .cs files go
+			CompileOutputs="false"     → Don't compile in THIS project (output goes to another)
+		-->
+		<Protobuf
+			Include="..\Mtd.GtfsRealTime.Protos\Protos\gtfsrt.proto"
+			GrpcServices="None"
+			ProtoRoot="..\Mtd.GtfsRealTime.Protos\Protos"
+			AdditionalImportDirs="$(PkgGoogle_Api_CommonProtos)\content\protos" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+</Project>
