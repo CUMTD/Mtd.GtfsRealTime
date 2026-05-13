@@ -6,7 +6,7 @@ using Microsoft.Net.Http.Headers;
 namespace Mtd.GtfsRealTime.Api.Controllers;
 
 [ApiController]
-public abstract class ProtoPassThroughController<TMessage> : ControllerBase
+public abstract class ProtoController<TMessage> : ControllerBase
 	where TMessage : IMessage<TMessage>
 {
 	private const string JsonMediaType = "application/json";
@@ -19,7 +19,7 @@ public abstract class ProtoPassThroughController<TMessage> : ControllerBase
 	protected readonly ILogger _logger;
 	protected readonly MessageParser<TMessage> _messageParser;
 
-	protected ProtoPassThroughController(MessageParser<TMessage> messageParser, HttpClient httpClient, ILogger logger)
+	protected ProtoController(MessageParser<TMessage> messageParser, HttpClient httpClient, ILogger logger)
 	{
 		ArgumentNullException.ThrowIfNull(messageParser, nameof(messageParser));
 		ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));

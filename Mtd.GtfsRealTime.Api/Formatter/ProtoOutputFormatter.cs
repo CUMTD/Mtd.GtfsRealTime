@@ -1,9 +1,7 @@
+using Google.Protobuf;
+
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Net.Http.Headers;
-
-using Mtd.GtfsRealTime.Proto.Helpers;
-
-using TransitRealtime;
 
 namespace Mtd.GtfsRealTime.Api.Formatter;
 
@@ -16,8 +14,9 @@ public class ProtoOutputFormatter : OutputFormatter
 	}
 	public override bool CanWriteResult(OutputFormatterCanWriteContext context)
 	{
-		// we can handle feed messages or byte[]
-		if (typeof(FeedMessage).IsAssignableFrom(context.ObjectType) || typeof(byte[]).IsAssignableFrom(context.ObjectType))
+		// Accept any protobuf IMessage (covers FeedMessage and any future message types)
+		// as well as raw byte[] pass-throughs.
+		if (typeof(IMessage).IsAssignableFrom(context.ObjectType) || typeof(byte[]).IsAssignableFrom(context.ObjectType))
 		{
 			return base.CanWriteResult(context);
 		}
@@ -32,13 +31,14 @@ public class ProtoOutputFormatter : OutputFormatter
 		{
 			dto = bytes;
 		}
-		else if (context.Object is ISerializeDTO gtfsObj)
+		else if (context.Object is IMessage message)
 		{
-			dto = gtfsObj.Serialize();
+			// Fallback for any proto message that doesn't implement ISerializeDTO.
+			dto = message.ToByteArray();
 		}
 		else
 		{
-			throw new ArgumentException("Object was not a Component.");
+			throw new ArgumentException("Object was not a protobuf message or byte[].");
 		}
 
 		var acceptHeader = httpContext.Request.Headers.Accept.FirstOrDefault();
@@ -46,11 +46,11 @@ public class ProtoOutputFormatter : OutputFormatter
 
 		if (!string.IsNullOrWhiteSpace(acceptHeader) && MediaTypeHeaderValue.TryParse(acceptHeader, out var parsedMediaType))
 		{
-		    var mediaTypeString = parsedMediaType.MediaType.Value;
-		    if (mediaTypeString is "application/x-protobuf" or "application/protobuf")
-		    {
-		        contentType = mediaTypeString;
-		    }
+			var mediaTypeString = parsedMediaType.MediaType.Value;
+			if (mediaTypeString is "application/x-protobuf" or "application/protobuf")
+			{
+				contentType = mediaTypeString;
+			}
 		}
 
 		httpContext.Response.ContentType = contentType;

@@ -10,11 +10,11 @@ namespace Mtd.GtfsRealTime.Api.Controllers;
 
 [Route("vehicle-positions")]
 [OutputCache(PolicyName = RealTimeDataCacheProfile.NAME)]
-public class VehiclePositionsController : ProtoPassThroughController<FeedMessage>
+public class VehiclePositionsController : ProtoController<FeedMessage>
 {
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
-	public VehiclePositionsController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient,  ILogger<VehiclePositionsController> logger): base(FeedMessage.Parser, httpClient, logger)
+	public VehiclePositionsController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient, ILogger<VehiclePositionsController> logger) : base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(gtfsRealTimeConfig?.Value, nameof(gtfsRealTimeConfig));
 		_gtfsRealTimeConfig = gtfsRealTimeConfig.Value;
@@ -24,5 +24,5 @@ public class VehiclePositionsController : ProtoPassThroughController<FeedMessage
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMessage))]
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
-	public async Task<IActionResult> TripUpdates(CancellationToken cancellationToken) => await GetProtoResponseFromDownstreamServer(_gtfsRealTimeConfig.VehiclePositionFeedUrl, cancellationToken);
+	public async Task<IActionResult> VehiclePositions(CancellationToken cancellationToken) => await GetProtoResponseFromDownstreamServer(_gtfsRealTimeConfig.VehiclePositionFeedUrl, cancellationToken);
 }

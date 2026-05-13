@@ -10,11 +10,11 @@ namespace Mtd.GtfsRealTime.Api.Controllers;
 
 [Route("trip-updates")]
 [OutputCache(PolicyName = RealTimeDataCacheProfile.NAME)]
-public class TripUpdatesController : ProtoPassThroughController<FeedMessage>
+public class TripUpdatesController : ProtoController<FeedMessage>
 {
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
-	public TripUpdatesController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient,  ILogger<TripUpdatesController> logger): base(FeedMessage.Parser, httpClient, logger)
+	public TripUpdatesController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient, ILogger<TripUpdatesController> logger) : base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(gtfsRealTimeConfig?.Value, nameof(gtfsRealTimeConfig));
 		_gtfsRealTimeConfig = gtfsRealTimeConfig.Value;

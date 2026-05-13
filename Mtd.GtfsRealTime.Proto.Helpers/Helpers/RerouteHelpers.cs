@@ -4,7 +4,7 @@ using HtmlAgilityPack;
 
 namespace Mtd.GtfsRealTime.Proto.Helpers.Helpers;
 
-public static class ReRoutesHelpers
+public static class RerouteHelpers
 {
 	private static readonly string[] _blockElements = [
 		"address",
