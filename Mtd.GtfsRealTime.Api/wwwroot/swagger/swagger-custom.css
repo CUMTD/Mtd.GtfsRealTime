@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
+    /* Brand palette (do not change values here without brand approval). */
     --white: #fff;
     --lightest-grey: #f8f8f7;
     --light-grey: #d9d9d6;
@@ -15,57 +16,81 @@
     --dark-teal: #008891;
     --light-green: #63be45;
     --dark-green: #318d3a;
+
+    /* Semantic tokens (light mode). All component rules below reference these
+       so dark mode can be applied by swapping these values in one place. */
     --text: var(--black);
     --primary-bg: var(--lightest-grey);
     --secondary-bg: var(--white);
     --link: var(--dark-blue);
     --auth-button: var(--dark-teal);
     --border-color: var(--darkest-grey);
+    --get-panel-bg: var(--light-blue-transparent);
+    --get-accent: var(--light-blue);
+    --info-tag-bg: var(--light-blue);
+    --response-accent: var(--dark-green);
+}
+
+/* Dark mode is driven by the .dark-mode class swagger-ui adds to <html>
+   (auto-applied when the OS prefers dark; toggleable via the topbar lightbulb).
+   We swap the semantic tokens; a few things still need targeted overrides
+   below where swagger-ui's own dark rules don't quite line up with brand. */
+html.dark-mode {
+    --text: var(--lightest-grey);
+    --primary-bg: #1c2022;             /* swagger-ui default dark page bg */
+    --secondary-bg: #262b2e;            /* lifted neutral for panels */
+    --link: var(--light-blue);
+    --auth-button: var(--light-teal);
+    --border-color: var(--dark-grey);
+    --get-panel-bg: #0c1a3d;            /* deep low-luminance derivative of --dark-blue */
+    --get-accent: var(--light-blue);
+    --info-tag-bg: var(--light-blue);
+    --response-accent: var(--light-green);
 }
 
 body {
-    background: var(--primary-bg) !important;
-	margin: 0;
+    background: var(--primary-bg);
+    margin: 0;
     font-family: 'Overpass', sans-serif !important;
 }
 
 .swagger-ui .download-url-wrapper {
-    display:none!important;
+    display: none !important;
 }
 
 .swagger-ui {
     font-family: 'Overpass', sans-serif !important;
-    color: var(--black);
+    color: var(--text);
 }
 
-    .swagger-ui .scheme-container {
-        background: var(--secondary-bg);
-    }
+.swagger-ui .scheme-container {
+    background: var(--secondary-bg);
+}
 
-    .swagger-ui .topbar a svg {
-        margin-left: 6rem;
-    }
+.swagger-ui .topbar a svg {
+    display: none !important;
+}
 
-    .swagger-ui .info li, .swagger-ui .info p,
-    .swagger-ui .info table,
-    .swagger-ui .info .title,
-    .swagger-ui .opblock-tag,
-    .swagger-ui section.models h4 {
-        color: var(--text);
-        font-family: 'Overpass', sans-serif !important;
-    }
+.swagger-ui .info li, .swagger-ui .info p,
+.swagger-ui .info table,
+.swagger-ui .info .title,
+.swagger-ui .opblock-tag,
+.swagger-ui section.models h4 {
+    color: var(--text);
+    font-family: 'Overpass', sans-serif !important;
+}
 
-    .swagger-ui .topbar {
-        background: var(--dark-blue);
-    }
+.swagger-ui .topbar {
+    background: var(--dark-blue);
+}
 
-    .swagger-ui .opblock-tag {
-        border-bottom-color: var(--border-color);
-    }
+.swagger-ui .opblock-tag {
+    border-bottom-color: var(--border-color);
+}
 
-    .swagger-ui section.models {
-        border-color: var(--border-color);
-    }
+.swagger-ui section.models {
+    border-color: var(--border-color);
+}
 
 /* Apply Overpass font to UI elements only - exclude code elements */
 .swagger-ui h1, .swagger-ui h2, .swagger-ui h3, .swagger-ui h4, .swagger-ui h5, .swagger-ui h6,
@@ -113,47 +138,50 @@ body {
 }
 
 .topbar-wrapper img[alt="Swagger UI"], .topbar-wrapper span {
-    visibility: hidden;
+    display: none !important;
 }
 
 .topbar-wrapper .link:after {
-    height: 60px;
-    content: ' ';
-    /*content: 'mtd.dev';*/
-    color: #fff;
-    visibility: visible;
-    display: block;
-    position: absolute;
-    padding: 14px 15px 15px 100px;
+    content: '';
+    display: inline-block;
+    width: 80px;
+    height: 40px;
     background-image: url('/image/mtd-logo.svg');
     background-repeat: no-repeat;
-    background-size: 80px;
-    background-position-y: center;
-    font-family: 'Overpass', sans-serif !important;
+    background-size: contain;
+    background-position: center;
 }
 
 .topbar-wrapper > a:nth-child(1) {
-	height: 40px !important
+    /* swagger-ui 5.31+ gives the topbar link `flex: 1; max-width: 300px`,
+       which would leave a large gap before the dark-mode toggle. Let the
+       link shrink to fit the MTD logo rendered via .link::after. */
+    flex: 0 0 auto !important;
+    max-width: none !important;
+    width: auto !important;
+    height: 40px !important;
+    padding: 0 15px;
 }
 
 .topbar-wrapper > a:nth-child(1) > svg:nth-child(1) {
-	display: none !important;
+    display: none !important;
 }
 
-
-
 .swagger-ui .topbar .download-url-wrapper .select-label select {
-	border-color: var(--light-blue);
+    border-color: var(--light-blue);
 }
 
 .swagger-ui .info .title small:last-child {
-    background-color: var(--light-blue) !important;
+    background-color: var(--info-tag-bg) !important;
 }
-
 
 .swagger-ui .btn.authorize {
     color: var(--auth-button);
     border-color: var(--auth-button);
+}
+
+.swagger-ui .btn.authorize svg {
+    fill: var(--auth-button);
 }
 
 .swagger-ui .info a {
@@ -161,19 +189,20 @@ body {
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary-method {
-    background: var(--light-blue);
+    background: var(--get-accent);
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary {
-    border-color: var(--light-blue);
+    border-color: var(--get-accent);
 }
 
 .swagger-ui .opblock.opblock-get .tab-header .tab-item.active h4 span:after {
-    background: var(--light-blue);
+    background: var(--get-accent);
 }
 
 .swagger-ui .opblock.opblock-get {
-    background: var(--light-blue-transparent);
+    background: var(--get-panel-bg);
+    border-color: var(--get-accent);
 }
 
 .swagger-ui .btn {
@@ -181,11 +210,10 @@ body {
     color: var(--darkest-grey);
 }
 
-    .swagger-ui .btn.cancel {
-        border-color: var(--dark-red);
-        color: var(--dark-red)
-    }
-
+.swagger-ui .btn.cancel {
+    border-color: var(--dark-red);
+    color: var(--dark-red)
+}
 
 .swagger-ui .auth-btn-wrapper {
     text-align: left;
@@ -193,15 +221,60 @@ body {
     flex-flow: row-reverse nowrap;
 }
 
-    .swagger-ui .auth-btn-wrapper .btn:first-of-type {
-        margin-right: 10px;
-    }
-
-.swagger-ui .response-control-media-type__accept-message, .swagger-ui .response-control-media-type--accept-controller select {
-    color: var(--dark-green);
-    border-color: var(--dark-green);
+.swagger-ui .response-control-media-type__accept-message,
+.swagger-ui .response-control-media-type--accept-controller select {
+    color: var(--response-accent);
+    border-color: var(--response-accent);
 }
 
 .swagger-ui .parameters-col_description input[type=text] {
     max-width: 580px;
+}
+
+/* ----------------------------------------------------------------------- */
+/* Dark-mode targeted overrides where the token swap above isn't enough.   */
+/* swagger-ui's own .dark-mode rules are quite broad; these tweaks bring   */
+/* brand-specific surfaces (GET panels, neutral text/border on grey btns)  */
+/* into line with the brand palette.                                       */
+/* ----------------------------------------------------------------------- */
+html.dark-mode body {
+    background: var(--primary-bg);
+}
+
+html.dark-mode .swagger-ui {
+    color: var(--text);
+}
+
+html.dark-mode .swagger-ui .scheme-container,
+html.dark-mode .swagger-ui section.models,
+html.dark-mode .swagger-ui .opblock {
+    background: var(--secondary-bg);
+}
+
+html.dark-mode .swagger-ui .opblock.opblock-get {
+    background: var(--get-panel-bg);
+}
+
+html.dark-mode .swagger-ui .info li,
+html.dark-mode .swagger-ui .info p,
+html.dark-mode .swagger-ui .info table,
+html.dark-mode .swagger-ui .info .title,
+html.dark-mode .swagger-ui .opblock-tag,
+html.dark-mode .swagger-ui section.models h4,
+html.dark-mode .swagger-ui .model-title,
+html.dark-mode .swagger-ui .parameter__name,
+html.dark-mode .swagger-ui .opblock .opblock-summary-description,
+html.dark-mode .swagger-ui .opblock .opblock-summary-path,
+html.dark-mode .swagger-ui .opblock .opblock-summary-path__deprecated {
+    color: var(--text);
+}
+
+html.dark-mode .swagger-ui .btn {
+    border-color: var(--light-grey);
+    color: var(--light-grey);
+}
+
+html.dark-mode .swagger-ui .btn.cancel {
+    border-color: var(--dark-red);
+    color: var(--dark-red);
 }
