@@ -55,6 +55,27 @@ public class ProtoOutputFormatter : OutputFormatter
 
 		httpContext.Response.ContentType = contentType;
 		httpContext.Response.ContentLength = dto.Length;
+
+		// Swagger UI's ResponseBody component decides whether to render a "Download file"
+		// link (vs. "Unrecognized response type; displaying content as text.") based on
+		// these response headers, not on the OpenAPI schema. Setting them here gives a
+		// good default UX in Swagger UI and any other client that honors them.
+		var fileName = GetDownloadFileName(httpContext.Request.Path);
+		httpContext.Response.Headers.ContentDisposition = $"attachment; filename=\"{fileName}\"";
+		httpContext.Response.Headers["Content-Description"] = "File Transfer";
+
 		await httpContext.Response.Body.WriteAsync(dto);
+	}
+
+	private static string GetDownloadFileName(PathString path)
+	{
+		var pathValue = path.HasValue ? path.Value!.Trim('/') : string.Empty;
+		if (string.IsNullOrEmpty(pathValue))
+		{
+			return "response.pb";
+		}
+
+		var lastSegment = pathValue.Split('/', StringSplitOptions.RemoveEmptyEntries).LastOrDefault();
+		return string.IsNullOrEmpty(lastSegment) ? "response.pb" : $"{lastSegment}.pb";
 	}
 }

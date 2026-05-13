@@ -14,6 +14,7 @@ using Mtd.GtfsRealTime.Api;
 using Mtd.GtfsRealTime.Api.Config;
 using Mtd.GtfsRealTime.Api.Formatter;
 using Mtd.GtfsRealTime.Api.Health;
+using Mtd.GtfsRealTime.Api.OpenApi;
 using Mtd.Stopwatch.Core.Entities.Schedule;
 using Mtd.Stopwatch.Core.Repositories.Schedule;
 using Mtd.Stopwatch.Infrastructure.EFCore;
@@ -126,7 +127,9 @@ builder.Services.AddControllers(options =>
 	var allowJson = bool.TryParse(builder.Configuration["AllowJson"], out var allowJsonConfigValue) && allowJsonConfigValue;
 	if (allowJson)
 	{
-		options.Filters.Add(new ProducesAttribute("application/json", "application/protobuf", "application/x-protobuf"));
+		// Protobuf is listed first so that Swagger UI defaults its response content-type
+		// dropdown to protobuf instead of JSON.
+		options.Filters.Add(new ProducesAttribute("application/protobuf", "application/x-protobuf", "application/json"));
 	}
 	else
 	{
@@ -155,7 +158,16 @@ if (builder.Environment.IsProduction())
 	});
 }
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+	// Mark protobuf media types as binary so Swagger UI renders a download link
+	// instead of "Unrecognized response type; displaying content as text."
+	options.AddOperationTransformer<ProtobufBinaryMediaTypeTransformer>();
+
+	// Hide HEAD and OPTIONS verbs from the published OpenAPI spec / Swagger UI
+	// while leaving them functional on the underlying endpoints.
+	options.AddDocumentTransformer<HideHeadAndOptionsTransformer>();
+});
 
 // Setup Serilog for structured logging using config from appsettings.json
 builder.Host.UseSerilog((context, services, loggerConfig) => loggerConfig
@@ -202,6 +214,7 @@ builder.Services.AddOutputCache(options =>
 			.Tag(StaticDataCacheProfile.NAME)
 			.SetVaryByQuery("*")
 			.SetVaryByRouteValue("*")
+			.SetVaryByHeader("Accept")
 		);
 
 	options
@@ -210,6 +223,7 @@ builder.Services.AddOutputCache(options =>
 			.Tag(RealTimeDataCacheProfile.NAME)
 			.SetVaryByQuery("*")
 			.SetVaryByRouteValue("*")
+			.SetVaryByHeader("Accept")
 		);
 
 	options.UseCaseSensitivePaths = false;
@@ -230,6 +244,8 @@ app.UseRouting();
 // Enables CORS (Cross-Origin Resource Sharing) using the named policy.
 // This allows public or browser-based clients to access the API across domains.
 app.UseCors(corsPolicyName);
+
+app.UseOutputCache();
 
 app.UseDefaultFiles();
 

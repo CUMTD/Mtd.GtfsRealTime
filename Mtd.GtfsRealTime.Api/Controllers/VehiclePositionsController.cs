@@ -10,11 +10,11 @@ namespace Mtd.GtfsRealTime.Api.Controllers;
 
 [Route("vehicle-positions")]
 [OutputCache(PolicyName = RealTimeDataCacheProfile.NAME)]
-public class VehiclePositionsController : ProtoPassThroughController
+public class VehiclePositionsController : ProtoPassThroughController<FeedMessage>
 {
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
-	public VehiclePositionsController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient,  ILogger<TripUpdatesController> logger): base(httpClient, logger)
+	public VehiclePositionsController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient,  ILogger<VehiclePositionsController> logger): base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(gtfsRealTimeConfig?.Value, nameof(gtfsRealTimeConfig));
 		_gtfsRealTimeConfig = gtfsRealTimeConfig.Value;
