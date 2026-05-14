@@ -278,3 +278,7 @@ html.dark-mode .swagger-ui .btn.cancel {
     border-color: var(--dark-red);
     color: var(--dark-red);
 }
+
+.swagger-ui .response-col_description a[download*=".pb"] {
+	color: var(--link) !important;
+}
