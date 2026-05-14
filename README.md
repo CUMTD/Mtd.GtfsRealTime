@@ -4,13 +4,14 @@
 
 A lightweight ASP.NET Core 10 API that exposes [GTFS-Realtime](https://gtfs.org/realtime/) feed endpoints for the **Champaign-Urbana Mass Transit District (MTD)**:
 
-| Endpoint | Source |
-|---|---|
-| `GET /trip-updates/` | Proxied from a configured upstream feed server |
-| `GET /vehicle-positions/` | Proxied from a configured upstream feed server |
-| `GET /service-alerts/` | Built from active reroutes in the Stopwatch database |
+| Endpoint | Source | Format |
+|---|---|---|
+| `GET /trip-updates/` | Proxied from a configured upstream feed server | Protobuf (default) or JSON |
+| `GET /vehicle-positions/` | Proxied from a configured upstream feed server | Protobuf (default) or JSON |
+| `GET /service-alerts/` | Built from active reroutes in the Stopwatch database | Protobuf (default) or JSON |
+| `GET /metadata/` | Aggregated from all three feeds | **JSON only** |
 
-Responses default to `application/protobuf` binary. JSON is available (opt-in via config) using canonical proto3 JSON via `Google.Protobuf.JsonFormatter`.
+Feed endpoints default to `application/protobuf` binary. JSON is available (opt-in via config) using canonical proto3 JSON via `Google.Protobuf.JsonFormatter`. The `/metadata/` endpoint always returns `application/json` regardless of the `AllowJson` configuration.
 
 ---
 
@@ -95,13 +96,14 @@ All configuration keys are resolved in order: `appsettings.json` → `appsetting
 
 ## Response formats
 
-The API returns protobuf binary by default. When `AllowJson` is `true`, clients may request JSON by sending `Accept: application/json`.
+The API returns protobuf binary by default for feed endpoints. When `AllowJson` is `true`, clients may request JSON by sending `Accept: application/json`. The `/metadata/` endpoint always returns JSON.
 
-| `Accept` header | Response `Content-Type` | Body |
-|---|---|---|
-| `application/protobuf` (or none) | `application/protobuf` | Binary protobuf |
-| `application/x-protobuf` | `application/x-protobuf` | Binary protobuf |
-| `application/json` | `application/json` | Canonical proto3 JSON |
+| `Accept` header | Response `Content-Type` | Body | Applies to |
+|---|---|---|---|
+| `application/protobuf` (or none) | `application/protobuf` | Binary protobuf | Feed endpoints |
+| `application/x-protobuf` | `application/x-protobuf` | Binary protobuf | Feed endpoints |
+| `application/json` | `application/json` | Canonical proto3 JSON | Feed endpoints (when `AllowJson` is `true`) |
+| Any | `application/json` | JSON | `/metadata/` (always) |
 
 Protobuf responses include `Content-Disposition: attachment` so that Swagger UI shows a download link.
 
@@ -122,7 +124,7 @@ flowchart TD
     H --> I{Static file?}
     I -- Yes --> R
     I -- No --> J["MapOpenApi (/openapi/*.yaml)"]
-    J --> K["MapControllers (TripUpdates / VehiclePositions / ServiceAlerts)"]
+    J --> K["MapControllers (TripUpdates / VehiclePositions / ServiceAlerts / Metadata)"]
     K --> L["MapHealthChecks (/health/*)"]
     L --> R
 ```
@@ -133,7 +135,7 @@ flowchart TD
 
 | Policy | Used by | Duration |
 |---|---|---|
-| `RealTimeDataCache` | Trip Updates, Vehicle Positions | 5 seconds |
+| `RealTimeDataCache` | Trip Updates, Vehicle Positions, Metadata | 5 seconds |
 | `StaticDataCache` | Service Alerts | 5 minutes |
 
 Both policies vary by `Accept` header, query string, and route values so protobuf and JSON responses are cached separately.

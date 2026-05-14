@@ -45,6 +45,82 @@ public abstract class ProtoController<TMessage> : ControllerBase
 	}
 
 	/// <summary>
+	/// Fetches raw bytes from the downstream GTFS-RT feed server without parsing.
+	/// </summary>
+	/// <param name="downstreamServer">Absolute URI of the upstream GTFS-RT feed endpoint.</param>
+	/// <param name="cancellationToken">Propagates notification that the request has been cancelled.</param>
+	/// <returns>
+	/// A tuple where <c>ResponseBytes</c> contains the raw protobuf bytes on success,
+	/// or <c>Error</c> contains an appropriate <see cref="IActionResult"/> on failure.
+	/// Exactly one of the two will be non-null.
+	/// </returns>
+	protected async Task<(byte[]? ResponseBytes, IActionResult? Error)> FetchBytesFromDownstreamServer(Uri downstreamServer, CancellationToken cancellationToken)
+	{
+		HttpResponseMessage httpResponseMessage;
+		try
+		{
+			httpResponseMessage = await _httpClient.GetAsync(downstreamServer, cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Failed to fetch from downstream server: {uri}.", downstreamServer);
+			return (null, Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Downstream Fetch Error", detail: "Failed to connect to the downstream server."));
+		}
+
+		if (!httpResponseMessage.IsSuccessStatusCode)
+		{
+			_logger.LogError("Got error status code ({statusCode}) from downstream server: {uri}.", httpResponseMessage.StatusCode, downstreamServer);
+			return (null, Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Downstream Server Error", detail: "The downstream server returned an error"));
+		}
+
+		byte[] responseBytes;
+		try
+		{
+			responseBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Failed to decode responseBytes from downstream server: {uri}.", downstreamServer);
+			return (null, Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Response Decoding Error", detail: "Failed to decode the responseBytes from the downstream server"));
+		}
+
+		return (responseBytes, null);
+	}
+
+	/// <summary>
+	/// Fetches the GTFS-RT feed from <paramref name="downstreamServer"/> and parses it into
+	/// a <typeparamref name="TMessage"/> instance.
+	/// </summary>
+	/// <param name="downstreamServer">Absolute URI of the upstream GTFS-RT feed endpoint.</param>
+	/// <param name="cancellationToken">Propagates notification that the request has been cancelled.</param>
+	/// <returns>
+	/// A tuple where <c>Message</c> contains the parsed protobuf message on success,
+	/// or <c>Error</c> contains an appropriate <see cref="IActionResult"/> on failure.
+	/// Exactly one of the two will be non-null.
+	/// </returns>
+	protected async Task<(TMessage? Message, IActionResult? Error)> FetchAndParseFromDownstreamServer(Uri downstreamServer, CancellationToken cancellationToken)
+	{
+		var (responseBytes, fetchError) = await FetchBytesFromDownstreamServer(downstreamServer, cancellationToken);
+		if (fetchError is not null)
+		{
+			return (default, fetchError);
+		}
+
+		TMessage parsed;
+		try
+		{
+			parsed = _messageParser.ParseFrom(responseBytes);
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Failed to parse protobuf response from downstream server: {uri}.", downstreamServer);
+			return (default, Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Response Parsing Error", detail: "Failed to parse the protobuf response from the downstream server"));
+		}
+
+		return (parsed, null);
+	}
+
+	/// <summary>
 	/// Fetches the GTFS-RT feed from <paramref name="downstreamServer"/>, then returns it as
 	/// either a protobuf binary response or canonical proto3 JSON, depending on the client's
 	/// <c>Accept</c> header.
@@ -63,34 +139,10 @@ public abstract class ProtoController<TMessage> : ControllerBase
 	/// </returns>
 	protected async Task<IActionResult> GetProtoResponseFromDownstreamServer(Uri downstreamServer, CancellationToken cancellationToken)
 	{
-		HttpResponseMessage httpResponseMessage;
-		try
+		var (responseBytes, fetchError) = await FetchBytesFromDownstreamServer(downstreamServer, cancellationToken);
+		if (fetchError is not null)
 		{
-			httpResponseMessage = await _httpClient.GetAsync(downstreamServer, cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Failed to fetch from downstream server: {uri}.", downstreamServer);
-			return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Downstream Fetch Error", detail: "Failed to connect to the downstream server.");
-		}
-
-		// ensure fetch was successful
-		if (!httpResponseMessage.IsSuccessStatusCode)
-		{
-			_logger.LogError("Got error status code ({statusCode}) from downstream server: {uri}.", httpResponseMessage.StatusCode, downstreamServer);
-			return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Downstream Server Error", detail: "The downstream server returned an error");
-		}
-
-		// convert to byte[]
-		byte[] responseBytes;
-		try
-		{
-			responseBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync(cancellationToken);
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Failed to decode responseBytes from downstream server: {uri}.", downstreamServer);
-			return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "Response Decoding Error", detail: "Failed to decode the responseBytes from the downstream server");
+			return fetchError;
 		}
 
 		if (ClientPrefersJson(Request))

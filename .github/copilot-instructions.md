@@ -7,8 +7,9 @@ This is a .NET 10 ASP.NET Core API that exposes the three GTFS-Realtime feed end
 - **`GET /trip-updates/`** — proxies a binary protobuf response from a configured upstream feed server
 - **`GET /vehicle-positions/`** — proxies a binary protobuf response from a configured upstream feed server
 - **`GET /service-alerts/`** — builds a `FeedMessage` locally from active `Reroute` entities in the Stopwatch Azure SQL database
+- **`GET /metadata/`** — aggregates metadata from all three feeds; always returns JSON regardless of `AllowJson` config
 
-There is no authentication or rate limiting. All three endpoints are public (unrestricted CORS).
+There is no authentication or rate limiting. All four endpoints are public (unrestricted CORS).
 
 ---
 
@@ -33,9 +34,19 @@ The `Proto.Helpers` project references `Codegen` (for `TransitRealtime.*` types)
 ### Pass-through controllers vs. local build
 - `TripUpdatesController` and `VehiclePositionsController` both inherit `ProtoController<FeedMessage>` and call `GetProtoResponseFromDownstreamServer(uri, ct)`. This method fetches bytes from the upstream server and either returns them as-is (protobuf) or parses + serializes to proto3 JSON.
 - `ServiceAlertsController` inherits `ControllerBase` directly (not `ProtoController<FeedMessage>`) because it never calls a downstream feed. It queries the DB and calls `reroutes.ConvertToFeedMessage()`.
+- `MetadataController` inherits `ProtoController<FeedMessage>` but uses `FetchAndParseFromDownstreamServer` to get parsed feeds for metadata extraction. It always returns JSON.
 
-### `ProtoController<TMessage>` is for HTTP pass-through only
+### `ProtoController<TMessage>` exposes three levels of downstream access
+The base class provides three protected methods, each building on the previous:
+1. **`FetchBytesFromDownstreamServer(Uri, CancellationToken)`** → `(byte[]? ResponseBytes, IActionResult? Error)` — fetches raw bytes without parsing. Used by `GetProtoResponseFromDownstreamServer` for the fast protobuf pass-through path.
+2. **`FetchAndParseFromDownstreamServer(Uri, CancellationToken)`** → `(TMessage? Message, IActionResult? Error)` — fetches and parses into a typed proto message. Used by `MetadataController` to extract metadata from feeds.
+3. **`GetProtoResponseFromDownstreamServer(Uri, CancellationToken)`** → `Task<IActionResult>` — fetches and returns either protobuf bytes or proto3 JSON depending on the client's `Accept` header. Used by `TripUpdatesController` and `VehiclePositionsController`.
+
+### `ProtoController<TMessage>` is for downstream feed access
 Do **not** make `ServiceAlertsController` inherit `ProtoController<TMessage>` — it would cause an unnecessary `HttpClient` injection. For any future locally-built feed, also inherit `ControllerBase` directly.
+
+### `MetadataController` is JSON-only
+`MetadataController` inherits `ProtoController<FeedMessage>` (it needs `FetchAndParseFromDownstreamServer`), but it returns plain C# model objects — not protobuf. It uses `[Produces("application/json")]` to override the global protobuf `ProducesAttribute` filter and serializes manually with `System.Text.Json.JsonSerializer.Serialize()` + `Content(json, "application/json")` to bypass the output formatter pipeline entirely. This works regardless of the `AllowJson` config setting.
 
 ### The formatter handles both `byte[]` and `IMessage`
 `ProtoOutputFormatter.WriteResponseBodyAsync` handles two cases:
@@ -95,7 +106,7 @@ In development, `appsettings.Development.json` sets `"AllowJson": true` to enabl
 
 | Policy constant | Duration | Used by |
 |---|---|---|
-| `RealTimeDataCacheProfile.NAME` | 5 seconds | `TripUpdatesController`, `VehiclePositionsController` |
+| `RealTimeDataCacheProfile.NAME` | 5 seconds | `TripUpdatesController`, `VehiclePositionsController`, `MetadataController` |
 | `StaticDataCacheProfile.NAME` | 5 minutes | `ServiceAlertsController` |
 
 Both policies vary by `Accept` header. **Always call `app.UseOutputCache()` in the pipeline** — without the middleware, `[OutputCache]` attributes are silently ignored.
@@ -125,3 +136,4 @@ Registered under `/health/{tag}`. Tags: `live`, `ready`, `healthy`, `db`, `netwo
 - **`AllowJson` is `false` by default** — in production, `SystemTextJsonOutputFormatter` is removed from the pipeline entirely. Do not assume JSON is available.
 - **Do not set `Content-Disposition` for JSON responses** — only `ProtoOutputFormatter` sets this header. The JSON path returns via `Content(json, "application/json")` directly.
 - **`FeedHeader.Timestamp` should always be set** — `RerouteConverter` sets it to `DateTime.UtcNow.ToPosixTime()`. Pass-through controllers preserve the upstream feed's existing timestamp (it is inside the binary bytes).
+- **`System.Text.Json` only serializes properties, not fields** — record types with field declarations (e.g. `public required string[] Ids;`) will serialize as `{}`. Always use properties with `{ get; init; }` on model/DTO records.
