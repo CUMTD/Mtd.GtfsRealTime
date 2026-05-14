@@ -15,6 +15,7 @@ env:
   PROJECT_PATH: "Mtd.GtfsRealTime.Api/Mtd.GtfsRealTime.Api.csproj"
   PUBLISH_DIR: "publish"
   AZURE_WEBAPP_NAME: "gtfs-rt-webapp"
+  AZURE_RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
 
 jobs:
   build:
@@ -83,6 +84,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          resource-group-name: ${{ env.AZURE_RESOURCE_GROUP }}
           package: ${{ env.PUBLISH_DIR }}
 
       - name: logout
