@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 
 using Mtd.GtfsRealTime.Api;
 using Mtd.GtfsRealTime.Api.Config;
+using Mtd.GtfsRealTime.Api.Filters;
 using Mtd.GtfsRealTime.Api.Formatter;
 using Mtd.GtfsRealTime.Api.Health;
 using Mtd.GtfsRealTime.Api.OpenApi;
@@ -133,9 +134,14 @@ builder.Services.AddControllers(options =>
 	}
 	else
 	{
-		options.OutputFormatters.RemoveType<SystemTextJsonOutputFormatter>();
+		// Do not remove SystemTextJsonOutputFormatter here — it is needed to serialize
+		// ProblemDetails error responses. The ProducesAttribute above restricts successful
+		// feed responses to protobuf; ProblemDetailsJsonFilter undoes that restriction for
+		// error responses so that the JSON formatter can handle them.
 		options.Filters.Add(new ProducesAttribute("application/protobuf", "application/x-protobuf"));
 	}
+
+	options.Filters.Add<ProblemDetailsJsonFilter>();
 
 	// Add our Protobuf formatter
 	// It is first so that it is used if the request does not specify an 'Accepts' header
