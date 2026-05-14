@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 	<PropertyGroup>
 		<UserSecretsId>717f5da2-d027-4f0e-b6bb-d959290b3064</UserSecretsId>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+		<!-- CS1591: suppress "missing XML comment" for config/internal types that don't need OpenAPI docs --><!--
+		<NoWarn>$(NoWarn);CS1591</NoWarn>-->
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" />

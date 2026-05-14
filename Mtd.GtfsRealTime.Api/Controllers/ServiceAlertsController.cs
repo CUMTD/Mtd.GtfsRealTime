@@ -14,6 +14,7 @@ namespace Mtd.GtfsRealTime.Api.Controllers;
 /// in the Stopwatch database. Responses are cached for
 /// <see cref="StaticDataCacheProfile.DURATION_IN_SECONDS"/> seconds.
 /// </summary>
+[ApiController]
 [Route("service-alerts")]
 [OutputCache(PolicyName = StaticDataCacheProfile.NAME)]
 public class ServiceAlertsController : ControllerBase
@@ -21,6 +22,9 @@ public class ServiceAlertsController : ControllerBase
 	private readonly IRerouteRepository<IReadOnlyCollection<Reroute>> _rerouteRepository;
 	private readonly ILogger<ServiceAlertsController> _logger;
 
+	/// <summary>
+	/// Initializes a new instance of <see cref="ServiceAlertsController"/>.
+	/// </summary>
 	public ServiceAlertsController(IRerouteRepository<IReadOnlyCollection<Reroute>> rerouteRepository, ILogger<ServiceAlertsController> logger)
 	{
 		ArgumentNullException.ThrowIfNull(rerouteRepository, nameof(rerouteRepository));
@@ -37,7 +41,7 @@ public class ServiceAlertsController : ControllerBase
 	[HttpGet, HttpHead, HttpOptions]
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMessage))]
-	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> ServiceAlerts(CancellationToken cancellationToken)
 	{
 		IReadOnlyCollection<Reroute> reroutes;

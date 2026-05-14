@@ -18,6 +18,9 @@ namespace Mtd.GtfsRealTime.Api.Formatter;
 /// </remarks>
 public class ProtoOutputFormatter : OutputFormatter
 {
+	/// <summary>
+	/// Instantiates the <see cref="ProtoOutputFormatter"/>.
+	/// </summary>
 	public ProtoOutputFormatter()
 	{
 		SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse("application/x-protobuf"));

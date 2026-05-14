@@ -7,6 +7,9 @@ namespace Mtd.GtfsRealTime.Api.Config;
 /// </summary>
 public class Health
 {
+	/// <summary>
+	/// The name of the configuration section in appsettings.json that binds to this class.
+	/// </summary>
 	public const string SectionName = "Health";
 
 	/// <summary>

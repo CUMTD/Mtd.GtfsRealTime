@@ -19,6 +19,9 @@ public class VehiclePositionsController : ProtoController<FeedMessage>
 {
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
+	/// <summary>
+	/// Initializes a new instance of <see cref="VehiclePositionsController"/>.
+	/// </summary>
 	public VehiclePositionsController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient, ILogger<VehiclePositionsController> logger) : base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(gtfsRealTimeConfig?.Value, nameof(gtfsRealTimeConfig));
@@ -32,6 +35,6 @@ public class VehiclePositionsController : ProtoController<FeedMessage>
 	[HttpGet, HttpHead, HttpOptions]
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMessage))]
-	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> VehiclePositions(CancellationToken cancellationToken) => await GetProtoResponseFromDownstreamServer(_gtfsRealTimeConfig.VehiclePositionFeedUrl, cancellationToken);
 }

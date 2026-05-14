@@ -160,6 +160,18 @@ if (builder.Environment.IsProduction())
 
 builder.Services.AddOpenApi(options =>
 {
+	// Set document metadata
+	options.AddDocumentTransformer((document, context, ct) =>
+	{
+		document.Info = new Microsoft.OpenApi.OpenApiInfo
+		{
+			Title = "MTD GTFS-Realtime API",
+			Version = "v1",
+			Description = "Provides GTFS-RT feed endpoints for the Champaign-Urbana Mass Transit District (MTD): trip updates, vehicle positions, and service alerts. Also exposes an aggregated metadata endpoint. Feed endpoints return `application/protobuf` by default.",
+		};
+		return Task.CompletedTask;
+	});
+
 	// Mark protobuf media types as binary so Swagger UI renders a download link
 	// instead of "Unrecognized response type; displaying content as text."
 	options.AddOperationTransformer<ProtobufBinaryMediaTypeTransformer>();

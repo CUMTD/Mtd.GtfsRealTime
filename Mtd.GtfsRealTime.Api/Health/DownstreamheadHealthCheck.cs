@@ -28,6 +28,11 @@ public sealed class DownstreamHeadHealthCheck : IHealthCheck
 	/// <summary>Named <see cref="HttpClient"/> used for HEAD requests (2-second timeout).</summary>
 	public const string CLIENT_NAME = "downstream-health";
 
+	/// <summary>
+	/// Instantiates the <see cref="DownstreamHeadHealthCheck"/> with the necessary dependencies.
+	/// </summary>
+	/// <param name="httpClientFactory">The factory used to create <see cref="HttpClient"/> instances.</param>
+	/// <param name="healthOptions">The options monitor providing health check configuration.</param>
 	public DownstreamHeadHealthCheck(
 		IHttpClientFactory httpClientFactory,
 		IOptionsMonitor<Config.Health> healthOptions)

@@ -25,6 +25,9 @@ public class MetadataController : ProtoController<FeedMessage>
 	private readonly IRerouteRepository<IReadOnlyCollection<Reroute>> _rerouteRepository;
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
+	/// <summary>
+	/// Initializes a new instance of <see cref="MetadataController"/>.
+	/// </summary>
 	public MetadataController(IRerouteRepository<IReadOnlyCollection<Reroute>> rerouteRepository, IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient, ILogger<TripUpdatesController> logger) : base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(rerouteRepository, nameof(rerouteRepository));
@@ -40,7 +43,7 @@ public class MetadataController : ProtoController<FeedMessage>
 	[HttpGet]
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMetadata))]
-	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> FeedMetadata(CancellationToken cancellationToken)
 	{
 		var tripUpdates = await FetchTripUpdatesMetadataAsync(cancellationToken);

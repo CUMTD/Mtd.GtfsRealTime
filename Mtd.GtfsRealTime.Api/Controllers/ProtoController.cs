@@ -29,10 +29,27 @@ public abstract class ProtoController<TMessage> : ControllerBase
 
 	private static readonly JsonFormatter _jsonFormatter = JsonFormatter.Default;
 
+	/// <summary>
+	/// <see cref="HttpClient" /> instance for making downstream requests. Should be injected.
+	/// </summary>
 	protected readonly HttpClient _httpClient;
+	/// <summary>
+	/// Provides logging capabilities for the containing class.
+	/// </summary>
 	protected readonly ILogger _logger;
+	/// <summary>
+	/// Provides access to the parser used to deserialize protocol buffer messages of type TMessage.
+	/// </summary>
+	/// <remarks>This field is typically used to parse binary data into strongly typed protocol buffer messages. It
+	/// is intended for use within derived classes that require custom parsing logic.</remarks>
 	protected readonly MessageParser<TMessage> _messageParser;
 
+	/// <summary>
+	/// Initializes a new instance of the ProtoController class with the specified message parser, HTTP client, and logger.
+	/// </summary>
+	/// <param name="messageParser">The MessageParser instance used to parse protocol buffer messages of type TMessage. Cannot be null.</param>
+	/// <param name="httpClient">The HttpClient instance used to send HTTP requests to downstream servers. Cannot be null.</param>
+	/// <param name="logger">The ILogger instance used for logging controller operations. Cannot be null.</param>
 	protected ProtoController(MessageParser<TMessage> messageParser, HttpClient httpClient, ILogger logger)
 	{
 		ArgumentNullException.ThrowIfNull(messageParser, nameof(messageParser));

@@ -19,6 +19,9 @@ public class TripUpdatesController : ProtoController<FeedMessage>
 {
 	private readonly GtfsRealTimeConfig _gtfsRealTimeConfig;
 
+	/// <summary>
+	/// Initializes a new instance of <see cref="TripUpdatesController"/>.
+	/// </summary>
 	public TripUpdatesController(IOptions<GtfsRealTimeConfig> gtfsRealTimeConfig, HttpClient httpClient, ILogger<TripUpdatesController> logger) : base(FeedMessage.Parser, httpClient, logger)
 	{
 		ArgumentNullException.ThrowIfNull(gtfsRealTimeConfig?.Value, nameof(gtfsRealTimeConfig));
@@ -32,6 +35,6 @@ public class TripUpdatesController : ProtoController<FeedMessage>
 	[HttpGet, HttpHead, HttpOptions]
 	[Route("")]
 	[ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FeedMessage))]
-	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
 	public async Task<IActionResult> TripUpdates(CancellationToken cancellationToken) => await GetProtoResponseFromDownstreamServer(_gtfsRealTimeConfig.TripUpdateFeedUrl, cancellationToken);
 }
