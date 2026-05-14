@@ -1,0 +1,90 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
+name: Deploy to Azure Web App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  PROJECT: Mtd.GtfsRealTime
+  DOTNET_VERSION: "10.0.x"
+  PROJECT_PATH: "Mtd.GtfsRealTime.Api/Mtd.GtfsRealTime.Api.csproj"
+  PUBLISH_DIR: "publish"
+  AZURE_WEBAPP_NAME: "gtfs-rt-webapp"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read #This is required for actions/checkout
+      packages: read
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}-${{ hashFiles('**/*.slnx') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        env:
+          MtdGithubUserName: CUMTD
+          MtdGithubAccessToken: ${{ secrets.GITHUB_TOKEN }}
+        run: dotnet restore $PROJECT.slnx
+
+      - name: Build
+        run: dotnet build ${{ env.PROJECT_PATH }} -c Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release --no-build -o ${{ env.PUBLISH_DIR }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dotnet-app
+          path: ${{ env.PUBLISH_DIR }}
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dotnet-app
+          path: ${{ env.PUBLISH_DIR }}
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          package: ${{ env.PUBLISH_DIR }}
+
+      - name: logout
+        run: |
+          az logout
